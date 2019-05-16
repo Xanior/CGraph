@@ -30,6 +30,8 @@ namespace CGraph
         Point mousePos = new Point(0,0);
         Point mousePosWhenClicked = new Point(0,0);
 
+        int traceDepth = -1;
+
         DateTime clickTime;
       
         public CGraph()
@@ -221,7 +223,7 @@ namespace CGraph
             pictureBox1.Invalidate();
         }
 
-        private void ViewHideSelected_Click(object sender, EventArgs e)
+        private void ViewCollapseSelected_Click(object sender, EventArgs e)
         {
             foreach (Node n in nodes)
             {
@@ -230,7 +232,7 @@ namespace CGraph
             pictureBox1.Invalidate();
         }
 
-        private void ViewHideAll_Click(object sender, EventArgs e)
+        private void ViewCollapseAll_Click(object sender, EventArgs e)
         {
             foreach (Node n in nodes)
             {
@@ -250,7 +252,73 @@ namespace CGraph
 
         private void TraceFromSelected_Click(object sender, EventArgs e)
         {
-            //TODO
+            traceDepth = 1;
+            foreach (Node n in nodes) { n.Hide(); }
+            foreach (Node n in nodes)
+            {
+                if(n.IsSelected()) n.Show();
+            }
+
+            pictureBox1.Invalidate();
+        }
+
+        private void TraceReset_Click(object sender, EventArgs e)
+        {
+            foreach (Node n in nodes) { n.Show(); }
+            traceDepth = -1;
+
+            pictureBox1.Invalidate();
+        }
+
+        private void AllToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            foreach (Node n in nodes)
+            {
+                n.Show();
+            }
+            pictureBox1.Invalidate();
+        }
+
+        private void ViewHideAll_Click(object sender, EventArgs e)
+        {
+            foreach (Node n in nodes)
+            {
+                n.Hide();
+            }
+            pictureBox1.Invalidate();
+        }
+
+        private void ViewHideSelected_Click(object sender, EventArgs e)
+        {
+            foreach (Node n in nodes)
+            {
+                if(n.IsSelected()) n.Hide();
+            }
+            pictureBox1.Invalidate();
+        }
+
+        private void TabControl_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            //NUM+ (for tracing)
+            if (e.KeyChar == '+')
+            {
+                traceDepth++;
+                foreach (Node n in nodes)
+                {
+                    if (n.IsSelected()) n.ShowNeighbours(traceDepth);
+                }
+            }
+            if(e.KeyChar == '-')
+            {
+                foreach (Node n in nodes) n.Hide();
+                traceDepth--;
+                foreach (Node n in nodes)
+                {
+                    if (n.IsSelected()) n.ShowNeighbours(traceDepth);
+                }
+            }
+
+            pictureBox1.Invalidate();
         }
     }
 }

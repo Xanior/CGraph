@@ -77,6 +77,7 @@ namespace CGraph
 
         public void Draw(System.Drawing.Graphics graphics)
         {
+            if (!visible) return;
             rec = new Rectangle(topLeft.X, topLeft.Y, size.Width, size.Height);
             graphics.FillRectangle(fillColor, rec);
 
@@ -100,11 +101,17 @@ namespace CGraph
 
             if (hasJumpConnection)
             {
-                DrawConnection(connectedToByJump, graphics, arrowPenJump);
-                if (hasDefaultConnection) DrawConnection(connectedToAsDefault, graphics, arrowPenNoJump);
+                if(connectedToByJump.IsVisible())DrawConnection(connectedToByJump, graphics, arrowPenJump);
+                if (hasDefaultConnection)
+                {
+                    if (connectedToAsDefault.IsVisible()) DrawConnection(connectedToAsDefault, graphics, arrowPenNoJump);
+                }
             } else
             {
-                if (hasDefaultConnection) DrawConnection(connectedToAsDefault, graphics, arrowPenDefault);
+                if (hasDefaultConnection)
+                {
+                    if (connectedToAsDefault.IsVisible()) DrawConnection(connectedToAsDefault, graphics, arrowPenDefault);
+                }
             }
             
         }
@@ -151,6 +158,16 @@ namespace CGraph
             return false;
         }
 
+        public void ShowNeighbours(int depth)
+        {
+            if (depth < 1) return;
+
+            this.Show();
+
+            if (hasDefaultConnection) connectedToAsDefault.ShowNeighbours(depth - 1);
+            if (hasJumpConnection) connectedToByJump.ShowNeighbours(depth - 1);
+        }
+
         public void Hide()
         {
             visible = false;
@@ -159,6 +176,11 @@ namespace CGraph
         public void Show()
         {
             visible = true;
+        }
+
+        public bool IsVisible()
+        {
+            return visible;
         }
 
         public void Click(Point mouse)
